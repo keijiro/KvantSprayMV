@@ -578,7 +578,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shutterAngle: 360
-  _sampleCount: 12
+  _sampleCount: 8
   _frameBlending: 0
   _reconstructionShader: {fileID: 4800000, guid: 60701d53f4c638048b5e49c197d08b77,
     type: 3}
@@ -596,7 +596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _intensity: 1.5
-  _radius: 0.9
+  _radius: 1
   _sampleCount: 2
   _sampleCountValue: 24
   _downsampling: 0
@@ -636,7 +636,7 @@ MonoBehaviour:
   _colorTemp: 0.21
   _colorTint: 0.13
   _toneMapping: 1
-  _exposure: 1.39
+  _exposure: 1.27
   _saturation: 1
   _rCurve:
     serializedVersion: 2
@@ -689,8 +689,8 @@ MonoBehaviour:
   _cCurve:
     serializedVersion: 2
     m_Curve:
-    - time: 0
-      value: 0
+    - time: 0.018475031
+      value: -0.009028222
       inSlope: 0.7444197
       outSlope: 0.7444197
       tangentMode: 0
