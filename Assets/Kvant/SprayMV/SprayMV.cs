@@ -242,6 +242,7 @@ namespace Kvant
         RenderTexture _rotationBuffer2;
 
         // Variables for simulation
+        float _time;
         Vector3 _noiseOffset;
 
         // Custom properties applied to the mesh renderer.
@@ -282,8 +283,6 @@ namespace Kvant
                 _material.hideFlags = HideFlags.HideAndDontSave;
             }
 
-            _material.SetFloat("_RandomSeed", _randomSeed);
-
             if (_positionBuffer1 == null) _positionBuffer1 = CreateSimulationBuffer();
             if (_positionBuffer2 == null) _positionBuffer2 = CreateSimulationBuffer();
             if (_velocityBuffer1 == null) _velocityBuffer1 = CreateSimulationBuffer();
@@ -307,6 +306,9 @@ namespace Kvant
         // Reset the simulation state.
         void ResetSimulationState()
         {
+            _time = 0;
+            _noiseOffset = Vector3.zero;
+
             UpdateSimulationParameters(0);
 
             Graphics.Blit(null, _positionBuffer2, _material, 0);
@@ -350,15 +352,15 @@ namespace Kvant
             m.SetVector("_NoiseParams", new Vector2(_noiseFrequency, _noiseAmplitude));
 
             // Move the noise field backward in the direction of the
-            // acceleration vector, or simply pull up when no acceleration.
-            if (_acceleration == Vector3.zero)
-                _noiseOffset += Vector3.up * _noiseMotion * dt;
-            else
-                _noiseOffset += _acceleration.normalized * _noiseMotion * dt;
-
+            // acceleration vector, or simply pull up if no acceleration is set.
+            var noiseDir = (_acceleration == Vector3.zero) ? Vector3.up : _acceleration.normalized;
+            _noiseOffset += noiseDir * _noiseMotion * dt;
             m.SetVector("_NoiseOffset", _noiseOffset);
 
-            m.SetVector("_Config", new Vector4(_throttle, _randomSeed, dt, Time.time));
+            _time += dt;
+            m.SetVector("_Config", new Vector3(_throttle, dt, _time));
+
+            m.SetFloat("_RandomSeed", _randomSeed);
         }
 
         // Invoke the simulation kernels.
@@ -451,24 +453,26 @@ namespace Kvant
 
             if (_reconfigured)
             {
-                // - Initialize temporary objects at the first frame.
-                // - Re-initialize temporary objects on configuration changes.
+                // Initialize temporary objects at the first frame,
+                // and re-initialize them on configuration changes.
                 ReleaseTemporaryObjects();
                 SetUpTemporaryObjects();
-
-                // Reset the simulation state.
                 ResetSimulationState();
-
-                // Editor: do warmup before the first frame.
-                if (!Application.isPlaying)
-                    for (var i = 0; i < 24; i++) 
-                        InvokeSimulationKernels(1.0f / 24);
-
                 _reconfigured = false;
             }
 
-            // Advance simulation time.
-            if (Application.isPlaying) InvokeSimulationKernels(Time.deltaTime);
+            if (Application.isPlaying)
+            {
+                // Advance simulation time.
+                InvokeSimulationKernels(Time.deltaTime);
+            }
+            else
+            {
+                // Editor: Simulate 1 second from the initial state.
+                ResetSimulationState();
+                for (var i = 0; i < 24; i++) 
+                    InvokeSimulationKernels(1.0f / 24);
+            }
 
             // Update external components (mesh filter and renderer).
             UpdateMeshFilter();

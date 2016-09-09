@@ -45,12 +45,12 @@ Shader "Hidden/Kvant/SprayMV/Kernels"
     float3 _SpinParams;   // spin*2, speed-to-spin*2, randomness
     float2 _NoiseParams;  // freq, amp
     float3 _NoiseOffset;
-    float4 _Config;       // throttle, random seed, dT, time
+    float4 _Config;       // throttle, dT, time
 
     // Particle generator functions
     float4 NewParticlePosition(float2 uv)
     {
-        float t = _Config.w;
+        float t = _Config.z;
 
         // Random position
         float3 p = float3(UVRandom(uv, t), UVRandom(uv, t + 1), UVRandom(uv, t + 2));
@@ -130,7 +130,7 @@ Shader "Hidden/Kvant/SprayMV/Kernels"
         float3 v = tex2D(_VelocityBuffer, i.uv).xyz;
 
         // Decaying
-        float dt = _Config.z;
+        float dt = _Config.y;
         p.w -= lerp(_LifeParams.x, _LifeParams.y, UVRandom(i.uv, 12)) * dt;
 
         if (p.w > -0.5)
@@ -158,7 +158,7 @@ Shader "Hidden/Kvant/SprayMV/Kernels"
             v *= _Acceleration.w; // dt is pre-applied in script
 
             // Constant acceleration
-            float dt = _Config.z;
+            float dt = _Config.y;
             v += _Acceleration.xyz * dt;
 
             // Acceleration by turbulent noise
@@ -183,7 +183,7 @@ Shader "Hidden/Kvant/SprayMV/Kernels"
         float3 v = tex2D(_VelocityBuffer, i.uv).xyz;
 
         // Delta angle
-        float dt = _Config.z;
+        float dt = _Config.y;
         float theta = (_SpinParams.x + length(v) * _SpinParams.y) * dt;
 
         // Randomness
