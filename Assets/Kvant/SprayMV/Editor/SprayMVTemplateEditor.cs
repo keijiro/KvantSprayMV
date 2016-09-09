@@ -66,7 +66,7 @@ namespace Kvant
 
         #region Create menu item functions
 
-        [MenuItem("Assets/Create/Kvant/SprayMV/Template")]
+        [MenuItem("Assets/Create/Kvant/SprayMV Template")]
         public static void CreateTemplateAsset()
         {
             // Make a proper path from the current selection.
