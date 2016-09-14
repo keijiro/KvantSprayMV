@@ -34,10 +34,12 @@ namespace Kvant
         #region Editor functions
 
         SerializedProperty _shapes;
+        SerializedProperty _maxInstanceCount;
 
         void OnEnable()
         {
             _shapes = serializedObject.FindProperty("_shapes");
+            _maxInstanceCount = serializedObject.FindProperty("_maxInstanceCount");
         }
 
         public override void OnInspectorGUI()
@@ -49,6 +51,8 @@ namespace Kvant
 
             EditorGUI.BeginChangeCheck();
             EditorGUILayout.PropertyField(_shapes, true);
+            EditorGUILayout.Space();
+            EditorGUILayout.PropertyField(_maxInstanceCount);
             var rebuild = EditorGUI.EndChangeCheck();
 
             serializedObject.ApplyModifiedProperties();
@@ -57,6 +61,11 @@ namespace Kvant
 
             // Readonly members
             EditorGUILayout.LabelField("Instance Count", template.instanceCount.ToString());
+
+            EditorGUILayout.Space();
+
+            // Rebuild button
+            rebuild |= GUILayout.Button("Rebuild");
 
             // Rebuild the template mesh when the properties are changed.
             if (rebuild) template.RebuildMesh();

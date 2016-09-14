@@ -251,6 +251,16 @@ namespace Kvant
         // Reset flag
         bool _reconfigured = true;
 
+        // Check if externally reconfigured.
+        bool CheckReconfigured()
+        {
+            if (_reconfigured) return true;
+            // Check if the template matches to the simulation buffer.
+            if (_template != null && _positionBuffer2 != null &&
+                _template.instanceCount != _positionBuffer2.width) return true;
+            return false;
+        }
+
         // Create a buffer for simulation.
         RenderTexture CreateSimulationBuffer()
         {
@@ -451,7 +461,7 @@ namespace Kvant
             // Do nothing if no template is set.
             if (_template == null) return;
 
-            if (_reconfigured)
+            if (CheckReconfigured())
             {
                 // Initialize temporary objects at the first frame,
                 // and re-initialize them on configuration changes.

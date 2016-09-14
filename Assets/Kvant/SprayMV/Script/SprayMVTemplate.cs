@@ -38,6 +38,13 @@ namespace Kvant
 
         [SerializeField] Mesh[] _shapes = new Mesh[1];
 
+        /// Maximum number of instances (editable)
+        public int maxInstanceCount {
+            get { return Mathf.Clamp(_maxInstanceCount, 1, 8192); }
+        }
+
+        [SerializeField] int _maxInstanceCount = 8192;
+
         /// Instance count (read only)
         public int instanceCount {
             get { return _instanceCount; }
@@ -86,7 +93,7 @@ namespace Kvant
             var vcount = 0;
             _instanceCount = 0;
 
-            while (_instanceCount < 8192)
+            while (_instanceCount < maxInstanceCount)
             {
                 // Get the Nth Source mesh.
                 var mesh = GetShape(_instanceCount);
