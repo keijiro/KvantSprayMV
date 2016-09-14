@@ -13,6 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _shapes:
   - {fileID: 0}
+  _maxInstanceCount: 8192
   _instanceCount: 8192
   _mesh: {fileID: 43000011677096074}
   _defaultShape: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
