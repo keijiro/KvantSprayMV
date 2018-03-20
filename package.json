@@ -1,0 +1,8 @@
+{
+    "name": "jp.keijiro.kvant.spray-mv",
+    "displayName": "Kvant SprayMV",
+    "version": "0.0.1",
+    "unity": "2018.1",
+    "description": "Kvant SprayMV is a specialized version of Kvant Spray that supports motion vector generation.",
+    "dependencies": { }
+}

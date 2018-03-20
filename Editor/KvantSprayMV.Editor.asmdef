@@ -1,0 +1,12 @@
+{
+    "name": "Kvant.SprayMV.Editor",
+    "references": [
+        "Kvant.SprayMV"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
