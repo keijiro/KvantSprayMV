@@ -1,7 +1,7 @@
 {
-    "name": "Kvant.SprayMV.Editor",
+    "name": "jp.keijiro.kvant.spray-mv.Editor",
     "references": [
-        "Kvant.SprayMV"
+        "jp.keijiro.kvant.spray-mv.Runtime"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [

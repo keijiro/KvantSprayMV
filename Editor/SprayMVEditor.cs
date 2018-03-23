@@ -113,6 +113,8 @@ namespace Kvant
 
             EditorGUILayout.Space();
 
+            EditorGUI.BeginChangeCheck();
+
             EditorGUILayout.PropertyField(_randomSeed);
 
             EditorGUILayout.Space();
@@ -152,6 +154,9 @@ namespace Kvant
             EditorGUILayout.PropertyField(_noiseAmplitude, _textAmplitude);
             EditorGUILayout.PropertyField(_noiseFrequency, _textFrequency);
             EditorGUILayout.PropertyField(_noiseMotion, _textMotion);
+
+            if (EditorGUI.EndChangeCheck() && !Application.isPlaying)
+                targetSpray.RequestResetSimulationFromEditor();
 
             EditorGUILayout.Space();
 

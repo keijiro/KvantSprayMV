@@ -22,13 +22,15 @@
 // THE SOFTWARE.
 //
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 namespace Kvant
 {
     [ExecuteInEditMode]
     [RequireComponent(typeof(MeshRenderer))]
     [AddComponentMenu("Kvant/Spray MV")]
-    public class SprayMV : MonoBehaviour
+    public class SprayMV : MonoBehaviour, ITimeControl, IPropertyPreview
     {
         #region Emitter parameters
 
@@ -222,6 +224,11 @@ namespace Kvant
             _reconfigured = true;
         }
 
+        public void RequestResetSimulationFromEditor()
+        {
+            _time = -1;
+        }
+
         #endif
 
         #endregion
@@ -243,6 +250,7 @@ namespace Kvant
 
         // Variables for simulation
         float _time;
+        float _externalTime = -1;
         Vector3 _noiseOffset;
 
         // Custom properties applied to the mesh renderer.
@@ -470,18 +478,38 @@ namespace Kvant
                 ResetSimulationState();
                 _reconfigured = false;
             }
-
-            if (Application.isPlaying)
+            else if (_time < 0)
             {
-                // Advance simulation time.
-                InvokeSimulationKernels(Time.deltaTime);
+                // Reset simulation is requested from the editor.
+                ResetSimulationState();
+            }
+
+            if (_externalTime < 0)
+            {
+                if (Application.isPlaying)
+                {
+                    // Advance simulation time.
+                    InvokeSimulationKernels(Time.deltaTime);
+                }
+                else
+                {
+                    // Editor: Simulate 1 second from the initial state.
+                    ResetSimulationState();
+                    for (var i = 0; i < 24; i++)
+                        InvokeSimulationKernels(1.0f / 24);
+                }
             }
             else
             {
-                // Editor: Simulate 1 second from the initial state.
-                ResetSimulationState();
-                for (var i = 0; i < 24; i++) 
-                    InvokeSimulationKernels(1.0f / 24);
+                // Reset the simulation state if the given time is in the past.
+                if (_externalTime < _time) ResetSimulationState();
+
+                // Repeatedly step forward till the given time.
+                while (_time + 1.0f / 120 < _externalTime)
+                {
+                    var delta = Mathf.Min(_externalTime - _time, 1.0f / 30);
+                    InvokeSimulationKernels(delta);
+                }
             }
 
             // Update external components (mesh filter and renderer).
@@ -494,6 +522,33 @@ namespace Kvant
             Gizmos.color = Color.yellow;
             Gizmos.matrix = transform.localToWorldMatrix;
             Gizmos.DrawWireCube(_emitterCenter, _emitterSize);
+        }
+
+        #endregion
+
+        #region ITimeControl functions
+
+        public void OnControlTimeStart()
+        {
+            _externalTime = 0;
+        }
+
+        public void OnControlTimeStop()
+        {
+            _externalTime = -1;
+        }
+
+        public void SetTime(double time)
+        {
+            _externalTime = (float)time;
+        }
+
+        #endregion
+
+        #region IPropertyPreview implementation
+
+        public void GatherProperties(PlayableDirector director, IPropertyCollector driver)
+        {
         }
 
         #endregion
