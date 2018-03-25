@@ -505,7 +505,7 @@ namespace Kvant
                 if (_externalTime < _time) ResetSimulationState();
 
                 // Repeatedly step forward till the given time.
-                while (_time + 1.0f / 120 < _externalTime)
+                while (_time + 1.0f / 120 * Time.timeScale < _externalTime)
                 {
                     var delta = Mathf.Min(_externalTime - _time, 1.0f / 30);
                     InvokeSimulationKernels(delta);
